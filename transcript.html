@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Asdf</title>
+<style>
+html, body, ul, li {
+    margin :0;
+    padding: 0;
+    font-family: helvetica, sans-serif;
+}
+
+li {
+    color: #999;
+    transition: 0.5s all;
+    font-size: 1.4em;
+}
+
+li + li {
+    color: #999;
+}
+
+li:last-child {
+    color: black;
+    font-size: 1.6em;
+}
+
+</style>
+    </head>
+    <body>
+        <ul id="transcript"></ul>
+        <script>
+
+function addLine(str) {
+    
+    /*
+    
+            webView.evaluateJavaScript
+           (“changeBackgroundColor(‘(colors[sender.selectedSegmentIndex])’)”,
+           completionHandler: nil)
+
+    */
+
+    let arr = str.split(/!|\?|\./);
+
+    let children = document.getElementById("transcript").childNodes;
+    
+    for (var i = 0; i < children.length; i++) {
+        children[i].innerHTML = arr[i];
+    }
+
+    console.log(children, arr);
+
+    if (children.length != arr.length) {
+        for (var i = children.length; i < arr.length; i++) {
+            let asdf = document.createElement("li");
+            asdf.innerHTML = arr[i];
+            document.getElementById("transcript").appendChild(asdf);
+        }
+    }
+    
+    setTimeout(function() {
+        window.scrollTo(0,document.body.scrollHeight);
+    }, 10);
+}
+
+let socket = new WebSocket("ws://nuc.int.masonx.ca:9898/");
+
+socket.onmessage = function(event) {
+    let d = JSON.parse(event.data);
+    if (d["mt"] == "transcription") addLine(d["m"]);
+};
+        </script>
+    </body>
+</html>
